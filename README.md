@@ -1,40 +1,44 @@
-# Trợ lý Lập trình Thông Minh (Smart Programming Assistant) - Phiên bản Web Flask
+# Smart Programming Assistant (Local Version)
 
 ## 🤖 Giới Thiệu
 
-**Trợ Lý Lập Trình Thông Minh** là một ứng dụng web Python được thiết kế để hỗ trợ các lập trình viên trong việc phân tích và gỡ lỗi mã nguồn. Sử dụng sức mạnh của mô hình ngôn ngữ lớn Gemini của Google, trợ lý này cung cấp các phân tích chi tiết và mô phỏng thực thi mã.
+**Trợ Lý Lập Trình Thông Minh** là một ứng dụng Python được thiết kế để hỗ trợ các lập trình viên trong việc phân tích, gỡ lỗi, và tối ưu hóa mã nguồn. Sử dụng sức mạnh của mô hình ngôn ngữ lớn Gemini của Google, trợ lý này cung cấp nhiều công cụ hữu ích để nâng cao năng suất và chất lượng mã.
 
-Phiên bản này được xây dựng bằng Flask, cung cấp một giao diện web trực quan để người dùng tương tác.
+Phiên bản này đã được điều chỉnh để chạy cục bộ trên máy tính của bạn với giao diện người dùng đồ họa (GUI) được xây dựng bằng Tkinter.
 
 ## ✨ Tính Năng Chính
 
-*   **Phân Tích Mã Nguồn Sâu Sắc**:
-    *   Nhận diện lỗi cú pháp, lỗi logic, và các lỗi thời gian chạy tiềm ẩn trong mã nguồn (hỗ trợ Python, C).
-    *   Đánh giá xem mã nguồn có đáp ứng yêu cầu của đề bài hay không.
-*   **Gợi Ý Sửa Lỗi Chi Tiết**:
-    *   Giải thích nguyên nhân của từng lỗi được phát hiện.
-    *   Đề xuất các cách sửa lỗi cụ thể, kèm theo ví dụ mã đã sửa (nếu cần).
-*   **Mô Phỏng Thực Thi Từng Bước**:
-    *   Mô phỏng thực thi mã nguồn gốc với các trường hợp kiểm thử (test cases) do AI tạo ra.
-    *   **Trường hợp lỗi**: Hiển thị chi tiết từng bước thực thi dẫn đến lỗi, giá trị biến, và giải thích tại sao lỗi xảy ra.
-    *   **Trường hợp chạy đúng (Happy Path)**: Hiển thị chi tiết từng bước thực thi khi mã chạy đúng với một đầu vào phù hợp.
-*   **Đánh Giá Tổng Quát**:
-    *   Cung cấp nhận xét chung về mã nguồn, hiệu suất (nếu có thể đánh giá), và các đề xuất cải thiện khác.
-*   **Giao Diện Web Hiện Đại**:
-    *   Giao diện người dùng trực quan, dễ sử dụng được xây dựng bằng Flask và HTML/CSS/JavaScript.
-    *   Hỗ trợ chế độ **Dark Mode** để làm việc thoải mái hơn trong điều kiện ánh sáng yếu.
-    *   Hiệu ứng **Loading Animation** khi xử lý yêu cầu phân tích.
-    *   Hiệu ứng **Pháo Bông (Confetti)** khi mã nguồn được đánh giá là đúng và đáp ứng yêu cầu.
-*   **Cấu Hình API Linh Hoạt**:
-    *   Cho phép người dùng cấu hình Google Gemini API key. (Hiện tại API key đang được hardcode trong `smart_programming_assistant.py` - cần cải thiện để bảo mật hơn).
+*   **Phân Tích Mã Nguồn**:
+    *   Kiểm tra lỗi cú pháp cho Python và C.
+    *   Thực thi mã (Python, C) và báo cáo lỗi runtime.
+    *   Phân tích logic mã dựa trên yêu cầu, xác định các vấn đề và đề xuất giải pháp.
+    *   Đánh giá mức độ tuân thủ của mã với yêu cầu đã cho.
+    *   Đề xuất mã nguồn đã sửa lỗi.
+*   **Mô Phỏng Thực Thi**:
+    *   Mô phỏng từng bước thực thi của mã nguồn (Python, C).
+    *   Hiển thị trạng thái biến và luồng điều khiển.
+*   **Sinh Test Case**:
+    *   Đề xuất các trường hợp kiểm thử (test cases) dựa trên mã nguồn và yêu cầu.
+    *   Hỗ trợ tạo khung test case cho Python (unittest, pytest) và C (asserts).
+*   **Giải Thích Mã Nguồn**:
+    *   Cung cấp giải thích chi tiết về chức năng, cấu trúc và các thuật toán trong mã.
+*   **So Sánh Phiên Bản**:
+    *   So sánh hai phiên bản gần nhất của mã nguồn và hiển thị sự khác biệt.
+*   **Quản Lý File**:
+    *   Tải lên và xử lý các file mã nguồn đơn lẻ (`.py`, `.c`, `.h`) hoặc file nén ZIP chứa nhiều file.
+*   **Giao Diện Người Dùng Thân Thiện**:
+    *   GUI được xây dựng bằng Tkinter, dễ sử dụng.
+    *   Yêu cầu nhập API Key của Gemini khi khởi động.
+    *   Các vùng riêng biệt cho yêu cầu, nhập mã, và hiển thị kết quả.
 
 ## 🔧 Yêu Cầu Hệ Thống
 
 *   Python 3.7+
-*   Các thư viện Python (có thể cài đặt qua pip, xem `requirements.txt` nếu có, hoặc cài đặt thủ công):
+*   Các thư viện Python (có thể cài đặt qua pip):
     *   `google-generativeai`
-    *   `Flask`
-    *   `MarkupSafe` (thường được cài đặt cùng với Flask)
+    *   `tiktoken`
+    *   `pytest` (dùng cho việc sinh và chạy một số test case, không bắt buộc cho chức năng chính của trợ lý)
+*   Trình biên dịch C (ví dụ: `gcc`) nếu bạn muốn làm việc với mã C.
 *   Một API Key hợp lệ từ Google AI Studio cho mô hình Gemini.
 
 ## 🚀 Hướng Dẫn Cài Đặt và Chạy
@@ -48,72 +52,65 @@ Phiên bản này được xây dựng bằng Flask, cung cấp một giao diệ
 2.  **Cài Đặt Thư Viện:**
     Mở terminal hoặc command prompt và chạy:
     ```bash
-    pip install google-generativeai Flask markupsafe
+    pip install google-generativeai tiktoken pytest
     ```
-    (Lưu ý: Tạo file `requirements.txt` với các thư viện này là một good practice.)
 
-3.  **Cấu Hình API Key:**
-    *   Hiện tại, API key đang được đặt trực tiếp trong file `smart_programming_assistant.py` tại hàm `setup_gemini_api()`:
-        ```python
-        api_key = "AIzaSyAa7zBQuCGvrsoQ3WF75JL76_0ZiD4_w6g" 
-        ```
-    *   **Khuyến nghị:** Để bảo mật, bạn nên thay thế bằng cách sử dụng biến môi trường hoặc một file cấu hình riêng không được commit vào repository.
-
-4.  **Chạy Ứng Dụng Web:**
-    Thực thi file Python chính:
+3.  **Chạy Ứng Dụng:**
+    Thực thi file Python chính (ví dụ: `Web_smart_programming_assistant.py` hoặc tên file bạn đã lưu):
     ```bash
-    python smart_programming_assistant.py
+    python Web_smart_programming_assistant.py
     ```
 
-5.  **Truy Cập Ứng Dụng:**
-    *   Sau khi chạy lệnh trên, ứng dụng Flask sẽ khởi động một web server cục bộ.
-    *   Mở trình duyệt web của bạn và truy cập vào địa chỉ được hiển thị trong terminal (thường là `http://127.0.0.1:5001/`).
+4.  **Nhập API Key:**
+    *   Khi ứng dụng khởi chạy, một cửa sổ sẽ yêu cầu bạn nhập API Key của Gemini.
+    *   Lấy API Key của bạn từ [Google AI Studio](https://aistudio.google.com/app/apikey).
+    *   Nhập API Key và nhấn "Lưu API Key". Nếu thành công, giao diện chính của ứng dụng sẽ xuất hiện.
 
 ## 🛠️ Cách Sử Dụng
 
-1.  **Truy Cập Giao Diện Web**: Mở trình duyệt và đi đến địa chỉ của ứng dụng (ví dụ: `http://127.0.0.1:5001/`).
-2.  **Kiểm Tra Trạng Thái API**: Giao diện sẽ hiển thị trạng thái kết nối API Key.
-3.  **Nhập Thông Tin Phân Tích**:
-    *   **Đề bài (Mô tả yêu cầu)**: Nhập mô tả chi tiết về vấn đề hoặc yêu cầu của mã nguồn.
-    *   **Ngôn ngữ lập trình**: Chọn ngôn ngữ của mã nguồn (hiện tại hỗ trợ Python, C).
-    *   **Mã nguồn**: Dán hoặc gõ mã nguồn cần phân tích vào ô tương ứng.
-4.  **Phân Tích Mã Nguồn**:
-    *   Nhấn nút "Phân tích Mã nguồn".
-    *   Một hiệu ứng loading sẽ xuất hiện trong khi trợ lý xử lý.
-5.  **Xem Kết Quả Phân Tích**:
-    *   Kết quả sẽ được hiển thị trên một trang mới, bao gồm:
-        *   Phân tích tổng quan về mã (đáp ứng yêu cầu, các loại lỗi).
-        *   Gợi ý sửa lỗi chi tiết.
-        *   Mô phỏng thực thi từng bước cho trường hợp lỗi và trường hợp chạy đúng.
-        *   Đánh giá chung về mã nguồn.
-    *   Nếu mã được phân tích là hoàn toàn chính xác và đáp ứng yêu cầu, một hiệu ứng pháo bông (confetti) sẽ xuất hiện.
-6.  **Chuyển Đổi Giao Diện (Dark Mode)**:
-    *   Sử dụng nút "Giao diện Sáng/Tối" để chuyển đổi giữa chế độ sáng và tối. Lựa chọn sẽ được lưu lại cho lần truy cập sau.
+1.  **Nhập API Key**: Bước đầu tiên khi khởi động ứng dụng.
+2.  **(Tùy chọn) Lưu Yêu Cầu Đề Bài**:
+    *   Nhập mô tả hoặc yêu cầu của dự án/bài toán vào ô "Yêu Cầu Đề Bài".
+    *   Nhấn "Lưu Yêu Cầu". Trợ lý sẽ phân tích sơ bộ yêu cầu này.
+3.  **Nhập hoặc Tải Mã Nguồn**:
+    *   **Nhập trực tiếp**:
+        *   Chọn ngôn ngữ (Python hoặc C) từ danh sách thả xuống.
+        *   Dán hoặc gõ mã nguồn vào ô "Nhập Mã Nguồn".
+        *   Nhấn "Lưu Mã Nguồn Này". Trợ lý sẽ phân tích sơ bộ mã này.
+    *   **Tải file**:
+        *   Nhấn nút "Tải File Lên (.py, .c, .h, .zip)".
+        *   Chọn file mã nguồn hoặc file ZIP từ máy tính của bạn.
+        *   Mã từ file sẽ được xử lý. Nếu là file mã nguồn đơn lẻ và phù hợp với ngôn ngữ đang chọn, nó có thể được tải vào ô nhập mã.
+4.  **Sử Dụng Các Công Cụ**:
+    Sau khi có mã nguồn và (tùy chọn) yêu cầu, bạn có thể sử dụng các nút trong phần "Công Cụ":
+    *   **Phân Tích Mã**: Phân tích chi tiết mã nguồn hiện tại dựa trên yêu cầu.
+    *   **Mô Phỏng Thực Thi**: Mô phỏng từng bước chạy của mã.
+    *   **Sinh Test Case**: Tạo các gợi ý test case cho mã.
+    *   **Giải Thích Mã**: Yêu cầu trợ lý giải thích chức năng và logic của mã.
+    *   **So Sánh Phiên Bản**: So sánh phiên bản mã hiện tại với phiên bản trước đó (nếu có ít nhất 2 phiên bản đã được lưu).
+5.  **Xem Kết Quả**:
+    *   Tất cả các phản hồi, phân tích, và kết quả từ trợ lý sẽ được hiển thị trong ô "Kết Quả" ở phía dưới giao diện.
 
-## 📂 Cấu Trúc Dự Án
+## 📂 Cấu Trúc Dự Án (Sơ Lược)
 
-*   `smart_programming_assistant.py`: File Python chính chứa logic của ứng dụng Flask, bao gồm:
-    *   Thiết lập API Gemini.
-    *   Định nghĩa các route của Flask (`/`, `/analyze`).
-    *   Hàm tạo prompt cho Gemini.
-    *   Hàm xử lý yêu cầu phân tích và tương tác với API Gemini.
-    *   Hàm chuyển đổi văn bản sang HTML.
-*   `templates/`: Thư mục chứa các file template HTML:
-    *   `index.html`: Trang chính để nhập liệu.
-    *   `results.html`: Trang hiển thị kết quả phân tích.
-*   **(Đề xuất) `static/`**: Thư mục có thể được tạo để chứa các file tĩnh như CSS, JavaScript riêng (nếu cần mở rộng ngoài việc nhúng trực tiếp vào HTML).
-*   **(Đề xuất) `requirements.txt`**: File liệt kê các thư viện Python cần thiết.
+*   `Web_smart_programming_assistant.py` (hoặc tên tương tự): File Python chính chứa toàn bộ logic của ứng dụng.
+    *   `Config`: Lớp chứa các cấu hình chung (tên model, ngôn ngữ hỗ trợ, v.v.).
+    *   `Utils`: Lớp chứa các hàm tiện ích (đếm token, đọc/ghi file, so sánh code, v.v.).
+    *   `GeminiClient`: Lớp quản lý tương tác với API Gemini.
+    *   `CodeExecutor`: Lớp thực thi mã Python và C, biên dịch mã C.
+    *   `CodeAnalyzer`: Lớp phân tích mã, kiểm tra cú pháp, mô phỏng thực thi, sinh test case bằng cách sử dụng `GeminiClient`.
+    *   `SmartProgrammingAssistant`: Lớp chính điều phối các hoạt động của trợ lý, quản lý mã nguồn, lịch sử phiên bản, và yêu cầu.
+    *   `UI`: Lớp xây dựng và quản lý giao diện người dùng đồ họa bằng Tkinter.
 
 ## 💡 Cải Tiến Tiềm Năng
 
-*   **Bảo Mật API Key**: Sử dụng biến môi trường hoặc file config an toàn cho API key.
-*   **Tạo `requirements.txt`**: Tự động hóa việc cài đặt dependencies.
-*   **Hỗ trợ Thêm Ngôn Ngữ**: Mở rộng khả năng phân tích cho nhiều ngôn ngữ lập trình hơn.
-*   **Lưu/Tải Phiên Làm Việc**: Cho phép người dùng lưu lại trạng thái phân tích hoặc mã nguồn.
-*   **Tích Hợp Git**: Cho phép phân tích mã từ repository Git.
-*   **Cải Thiện UI/UX**: Nâng cao trải nghiệm người dùng với các tính năng tương tác phong phú hơn.
-*   **Phân Tách CSS/JS**: Di chuyển CSS và JavaScript ra các file riêng trong thư mục `static/` để dễ quản lý hơn.
+*   Hỗ trợ thêm nhiều ngôn ngữ lập trình.
+*   Cải thiện khả năng định dạng Markdown trong đầu ra Tkinter (hiện tại là text thuần).
+*   Tích hợp với các IDE phổ biến.
+*   Lưu và tải lại phiên làm việc.
+*   Cho phép tùy chỉnh chi tiết hơn các tham số của mô hình Gemini.
+*   Thêm tính năng gỡ lỗi tương tác.
 
 ---
 
-Hy vọng Trợ Lý Lập Trình Thông Minh (phiên bản Web Flask) này sẽ hữu ích cho bạn! 
+Hy vọng Trợ Lý Lập Trình Thông Minh này sẽ hữu ích cho bạn! 

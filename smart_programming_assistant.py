@@ -3,6 +3,7 @@
 # Cài đặt thư viện cần thiết
 # Make sure to install google-generativeai: pip install google-generativeai
 # Make sure to install Flask: pip install Flask
+# Make sure to install python-dotenv: pip install python-dotenv
 
 import os
 import re
@@ -11,6 +12,7 @@ import google.generativeai as genai  # Use Google's Gemini API
 import json
 from flask import Flask, render_template, request
 from markupsafe import Markup
+from dotenv import load_dotenv # Added for loading .env file
 
 app = Flask(__name__)
 
@@ -31,9 +33,19 @@ gemini_model_global = None  # Global Gemini model
 
 # Cấu hình API key cho Gemini
 def setup_gemini_api():
+  load_dotenv()  # Load environment variables from .env file
   global model_name_global, gemini_model_global
   try:
-    api_key = "AIzaSyAa7zBQuCGvrsoQ3WF75JL76_0ZiD4_w6g"
+    # ✅ Lấy API Key từ biến môi trường
+    api_key = os.environ.get("GEMINI_API_KEY")
+    
+    if not api_key:
+        print("❌ Lỗi: Biến môi trường GEMINI_API_KEY chưa được thiết lập.")
+        # Adjusted message to be more generic for local vs PythonAnywhere
+        print("Vui lòng kiểm tra tệp .env hoặc cấu hình biến môi trường.") 
+        model_name_global = None
+        gemini_model_global = None
+        return False
     
     # Configure the Gemini API
     genai.configure(api_key=api_key)
