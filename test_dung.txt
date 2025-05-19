@@ -1,0 +1,53 @@
+BÀI LÀM ĐÚNG
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Nhập vào 1 số nguyên không âm đại diện cho 1 năm. Viết chương trình kiểm tra xem đó có phải là năm nhuận hay không?
+//Năm nhuận là năm thỏa 
+//1 trong 2 
+//điều kiện sau:
+//Đk1: là năm chia hết cho 4 nhưng không chia hết cho 100
+//Đk2: là năm chia hết cho 400
+
+
+
+-------------------------------------------------------------
+
+
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(){	
+	
+	int x;
+	printf("Nhap vao 1 so nguyen khong am dai dien cho 1 nam : ");
+	scanf("%d", &x);  
+	printf("\n");
+	
+	 	
+	if ( (x%4==0 && x%100!=0) || (x%400==0)){
+		printf("Day la nam nhuan");	
+	}
+	else{
+		printf("Day khong la nam nhuan");
+	}
+	
+
+	
+	return 0;
+}
