@@ -67,7 +67,7 @@ def setup_gemini_api():
     gemini_model_global = None
     return False
 
-# Tạo các prompt để làm việc với mã nguồn C và Python
+# Cải thiện create_prompt cho phần mô phỏng thực thi rõ ràng hơn
 def create_prompt(problem_description, source_code, language):
   prompt = f"""
   Bạn là một trợ lý lập trình thông minh chuyên phân tích và debug mã nguồn {language}.
@@ -93,128 +93,149 @@ def create_prompt(problem_description, source_code, language):
   - Cung cấp đoạn mã đã sửa (nếu cần).
   
   ## 3. Mô phỏng thực thi từng bước
-  - **Quan trọng**: Dựa vào "Phân tích mã nguồn" (mục 1) và "Gợi ý sửa lỗi" (mục 2):
-    - Nếu có lỗi logic hoặc lỗi thời gian chạy tiềm ẩn được xác định có thể dẫn đến hành vi sai với một số đầu vào nhất định:
-      + **Chọn một ví dụ đầu vào cụ thể (test case) sẽ gây ra lỗi đó.**
-      + **Mô phỏng thực thi từng bước với test case gây lỗi này.**
-      + Trong quá trình mô phỏng, khi đến bước gây ra lỗi, hãy chỉ rõ: "Tại bước này, với đầu vào [ví dụ đầu vào], mã nguồn sẽ [mô tả hành vi sai] do [giải thích nguyên nhân dựa trên lỗi logic đã xác định]."
-    - Nếu không có lỗi logic nào được xác định hoặc các lỗi không dẫn đến hành vi sai rõ ràng trong thực thi (ví dụ: chỉ là vấn đề về tối ưu hoặc coding style), hoặc nếu mã đã được coi là đúng:
-      + Mô phỏng với một ví dụ đầu vào "happy path" (trường hợp chạy đúng).
-      + Nếu mã nguồn thực thi thành công và đúng yêu cầu, hãy kết thúc với thông báo "Chúc mừng, mã nguồn hoạt động chính xác với đầu vào này!"
+  - **Bắt buộc**: Thực hiện mô phỏng với **CẢ HAI** trường hợp sau:
+    + **Trường hợp lỗi**: Chọn một đầu vào cụ thể sẽ gây ra lỗi hoặc kết quả sai. Mô phỏng thực thi chi tiết với đầu vào này để chỉ ra lỗi.
+    + **Trường hợp đúng** (Sau khi đã sửa lỗi): Mô phỏng thực thi với một đầu vào khác để chứng minh code đã sửa hoạt động đúng.
   
-  - Ở mỗi bước mô phỏng, hiển thị:
-    + Dòng code đang được "thực thi"
-    + Trạng thái của các biến quan trọng (tên và giá trị)
-    + Luồng điều khiển (rẽ nhánh if/else, vòng lặp)
+  - **Cho mỗi trường hợp**: Thực hiện mô phỏng chi tiết từng bước:
+    + Chỉ rõ giá trị đầu vào đang sử dụng
+    + Hiển thị từng dòng code đang thực thi
+    + Hiển thị giá trị của các biến sau mỗi bước
+    + Với trường hợp lỗi: Đánh dấu **CHÍNH XÁC** bước nào gây ra lỗi
+    + Giải thích tại sao bước đó gây ra lỗi
   
   ## 4. Đánh giá tổng quát
   - Tóm tắt về mã nguồn, hiệu suất, và đề xuất cải thiện (nếu có).
   
-  Trả lời bằng định dạng JSON với cấu trúc sau:
-  ```
+  **HƯỚNG DẪN TRẢ LỜI - CỰC KỲ QUAN TRỌNG:**
+  
+  **TOÀN BỘ PHẢN HỒI CỦA BẠN PHẢI LÀ MỘT ĐỐI TƯỢNG JSON HỢP LỆ DUY NHẤT.**
+  **KHÔNG BAO GỒM bất kỳ văn bản giới thiệu, giải thích nào, hoặc các dấu markdown code fence (như ```json) trước hoặc sau đối tượng JSON.**
+  
+  **Yêu cầu chi tiết cho cấu trúc và nội dung JSON:**
+  - Tất cả các giá trị chuỗi (string) trong JSON PHẢI được bao quanh bởi dấu ngoặc kép (`"`).
+  - MỌI ký tự đặc biệt bên trong giá trị chuỗi PHẢI được escape đúng cách. Ví dụ:
+    - Dấu ngoặc kép (`"`) trong chuỗi phải là `\\\"`.
+    - Dấu gạch chéo ngược (`\\\\`) trong chuỗi phải là `\\\\\\\\`.
+    - Ký tự xuống dòng mới phải là `\\\\n`.
+    - Ký tự tab phải là `\\\\t`.
+  - Các trường chứa mã nguồn (ví dụ: `fixed_code`, `code_line`) phải là một chuỗi JSON hợp lệ. KHÔNG sử dụng dấu backtick (`) để bao quanh giá trị của các trường này; thay vào đó, hãy đảm bảo mã nguồn là một phần của một chuỗi JSON được escape đúng cách.
+  
+  **Cấu trúc JSON bắt buộc:**
+  ```json
   {{
     "analysis": {{
-      "syntax_errors": [Danh sách các lỗi cú pháp],
-      "logical_errors": [Danh sách các lỗi logic],
-      "runtime_errors": [Danh sách các lỗi thời gian chạy tiềm ẩn],
+      "syntax_errors": ["Danh sách các lỗi cú pháp dưới dạng chuỗi"],
+      "logical_errors": ["Danh sách các lỗi logic dưới dạng chuỗi"],
+      "runtime_errors": ["Danh sách các lỗi thời gian chạy tiềm ẩn dưới dạng chuỗi"],
       "meets_requirements": true/false
     }},
     "suggestions": [
       {{
-        "line": số_dòng,
-        "error": "Mô tả lỗi",
-        "fix": "Đề xuất sửa lỗi",
-        "fixed_code": "Đoạn mã đã sửa"
+        "line": số_dòng, // integer
+        "error": "Mô tả lỗi chi tiết (chuỗi JSON được escape đúng)",
+        "fix": "Đề xuất sửa lỗi chi tiết (chuỗi JSON được escape đúng)",
+        "fixed_code": "Đoạn mã đã sửa (TOÀN BỘ MÃ NGUỒN được đặt trong một chuỗi JSON duy nhất, được escape đúng cách, ví dụ: `#include <stdio.h>\\nint main() {{...}}`)"
       }}
     ],
-    "simulation": [
-      {{
-        "step": 1,
-        "code_line": "Dòng code đang thực thi",
-        "explanation": "Giải thích",
-        "variables": {{
-          "tên_biến_1": "giá_trị_1",
-          "tên_biến_2": "giá_trị_2"
-        }},
-        "error": null,  // "null" nếu không có lỗi ở bước này, mô tả lỗi nếu có
-        "is_problem_step": false // true nếu bước này là nơi lỗi logic/runtime được kích hoạt
+    "simulation": {{
+      "error_case": {{
+        "input": "Giá trị đầu vào gây lỗi (chuỗi JSON)",
+        "steps": [
+          {{
+            "step": 1, // integer
+            "code_line": "Dòng code đang thực thi (chuỗi JSON được escape đúng)",
+            "explanation": "Giải thích bước (chuỗi JSON được escape đúng)",
+            "variables": {{ // Đối tượng chứa các biến và giá trị của chúng (chuỗi JSON)
+              "tên_biến_1": "giá_trị_1",
+              "tên_biến_2": "giá_trị_2"
+            }},
+            "is_error_step": false // boolean
+          }},
+          {{
+            "step": 2, // integer
+            "code_line": "Dòng code đang thực thi (chuỗi JSON được escape đúng)",
+            "explanation": "Giải thích bước (chuỗi JSON được escape đúng)",
+            "variables": {{ 
+              "tên_biến_1": "giá_trị_1",
+              "tên_biến_2": "giá_trị_2"
+            }},
+            "is_error_step": true, // boolean
+            "error_explanation": "Chi tiết lý do tại sao lỗi xảy ra ở bước này (chuỗi JSON được escape đúng)"
+          }}
+        ],
+        "result": "Kết quả sai/lỗi thu được (chuỗi JSON)"
+      }},
+      "corrected_case": {{
+        "input": "Giá trị đầu vào chạy đúng (chuỗi JSON)",
+        "steps": [
+          {{
+            "step": 1, // integer
+            "code_line": "Dòng code đã sửa đang thực thi (chuỗi JSON được escape đúng)",
+            "explanation": "Giải thích bước (chuỗi JSON được escape đúng)",
+            "variables": {{ 
+              "tên_biến_1": "giá_trị_1",
+              "tên_biến_2": "giá_trị_2"
+            }}
+          }}
+        ],
+        "result": "Kết quả đúng thu được (chuỗi JSON)"
       }}
-    ],
-    "execution_result": "success/failure/not_applicable",  // Kết quả thực thi chung của test case mô phỏng
-    "simulated_input": "[Giá trị đầu vào được sử dụng cho mô phỏng]", // Thêm trường này
-    "success_message": "Chúc mừng, mã nguồn hoạt động chính xác!",  // Chỉ có khi thành công
-    "evaluation": "Nhận xét tổng thể về mã nguồn"
+    }},
+    "evaluation": "Nhận xét tổng thể về mã nguồn (chuỗi JSON được escape đúng)"
   }}
   ```
-  
-  Trả lời chỉ sử dụng định dạng JSON như trên, không thêm bất kỳ nội dung nào khác.
   """
   return prompt
 
-# Hàm gửi prompt đến Gemini API và nhận kết quả
+# Sửa hàm analyze_code_with_gemini để xử lý JSON đúng cách
 def analyze_code_with_gemini(model_name, prompt_text):
   global gemini_model_global
   if not model_name or not gemini_model_global:
     return None, "Model hoặc Gemini client không được cấu hình."
   try:
-    # Generate content with Gemini
-    response = gemini_model_global.generate_content(prompt_text)
+    generation_config = {
+      "temperature": 0.2,
+      "top_p": 0.95,
+      "top_k": 40,
+      "max_output_tokens": 20480, 
+    }
     
-    # Get the response text
-    response_content = response.text
+    response = gemini_model_global.generate_content(
+      prompt_text,
+      generation_config=generation_config
+    )
     
+    response_content = response.text.strip()
+    # print(f"---- RAW RESPONSE ----\\n{response_content}\\n---------------------") # For debugging
+
+    # 1. Extract JSON string from potential markdown block if present
+    #    Or, if the model *only* returns JSON, this step might be bypassed.
+    json_str = response_content
+    if response_content.startswith("```json") and response_content.endswith("```"):
+        json_str = response_content[len("```json"):-(len("```"))].strip()
+    elif response_content.startswith("```") and response_content.endswith("```"):
+        json_str = response_content[len("```"):-(len("```"))].strip()
+    # If it wasn't in a markdown block, we assume json_str is the response_content itself,
+    # hoping it's a direct JSON string as per the refined prompt.
+
+    # print(f"---- EXTRACTED/RAW JSON STRING ----\\n{json_str}\\n----------------------------------") # For debugging
+
+    # 2. Attempt to parse the JSON string directly
     try:
-      # Try to parse the response as JSON directly
-      result = json.loads(response_content)
-      return result, None
-    except json.JSONDecodeError as e_direct_parse:
-      # If direct parsing fails, try to extract JSON from markdown code blocks or other formats
-      # and then attempt to fix common issues like unescaped newlines in code snippets.
-      json_match = re.search(r'```json\s*([\s\S]*?)\s*```|```\s*([\s\S]*?)\s*```|({[\s\S]*})', response_content)
-      if json_match:
-        json_str = next(group for group in json_match.groups() if group)
-        
-        # Attempt to fix unescaped newlines within "fixed_code" fields
-        # This is a common issue with LLM-generated JSON containing code.
-        # def escape_newlines_in_fixed_code(match): # This function was defined but not used, consider removing or implementing
-        #     # The content of fixed_code is in match.group(1)
-        #     # Escape newlines and also backslashes that are not already part of an escape sequence
-        #     escaped_content = match.group(1).replace('\\', '\\\\').replace('\n', '\\n').replace('\"', '\\\"')
-        #     return f'"fixed_code": "{escaped_content}"'
+        result = json.loads(json_str)
+        return result, None
+    except json.JSONDecodeError as e_parse:
+        # If parsing fails, it means the LLM didn't adhere to the strict JSON prompt
+        error_message = f"Lỗi khi phân tích JSON từ phản hồi của Gemini: {str(e_parse)}\\n"
+        error_message += f"Phản hồi nhận được (đã cố gắng trích xuất từ markdown nếu có):\\n{json_str}"
+        # Include the original full response if it was different (e.g., markdown was stripped)
+        if json_str != response_content:
+            error_message += f"\\n\\nPhản hồi gốc đầy đủ từ Gemini:\\n{response_content}"
+        return None, error_message
 
-        try:
-            json_str_fixed = json_str # Start with original extracted string
-
-            # 1. Replace backtick-enclosed strings for "fixed_code" with proper double-quoted strings,
-            #    escaping inner double quotes and backslashes.
-            def replace_backtick_string(match):
-                code_content = match.group(1)
-                # Escape backslashes first, then double quotes
-                escaped_code_content = code_content.replace('\\', '\\\\').replace('"', '\\"')
-                return f'"fixed_code": "{escaped_code_content}"'
-            
-            # This regex looks for "fixed_code": `...` (non-greedy) a
-            json_str_fixed = re.sub(r'(\"fixed_code\":\s*)\`([\\s\\S]*?)\`', replace_backtick_string, json_str_fixed)
-            
-            # 2. Iteratively replace unescaped newlines that are likely part of string content
-            # This pattern looks for `\n` not preceded by another backslash.
-            # It also tries to handle `\r\n`.
-            json_str_fixed = re.sub(r'(?<!\\)(\\r)?\\n', r'\\\\n', json_str_fixed)
-            
-            # If you still face issues with other characters, you might add more specific regex fixes here for:
-            # - Unescaped backslashes not part of a valid escape sequence (if not covered by replace_backtick_string)
-            
-            result = json.loads(json_str_fixed)
-            return result, None
-        except json.JSONDecodeError as e_inner:
-          # If fixing also fails, return the original error and the attempted fixed string for debugging
-          return None, f"Lỗi khi parse JSON trích xuất từ Gemini (sau khi thử sửa): {str(e_inner)}\nPhản hồi gốc: {response_content}\nChuỗi JSON đã thử sửa: {json_str_fixed}"
-      else:
-        # If no JSON block is found at all, use the original parsing error
-        return None, f"Không thể trích xuất JSON từ phản hồi Gemini. Lỗi parse ban đầu: {str(e_direct_parse)}\nPhản hồi nhận được:\n{response_content}"
-
-  except Exception as e:
-    return None, f"Lỗi khi gọi Gemini API: {str(e)}"
+  except Exception as e_api_call:
+    return None, f"Lỗi khi gọi Gemini API hoặc lỗi không xác định khác: {str(e_api_call)}"
 
 # Convert text to HTML, escaping special characters and preserving line breaks
 def text_to_html(text_content):

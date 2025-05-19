@@ -4,174 +4,161 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kết quả Phân tích</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; margin: 0; padding: 20px; background-color: #f4f4f4; color: #333; }
-        .container { max-width: 900px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .header { background-color: #4285f4; color: white; padding: 15px; border-radius: 5px; text-align: center; margin-bottom: 20px; }
-        .header h1 { margin: 0; font-size: 1.8em; }
-        a { color: #357ae8; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        .error-message { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
-        
-        .analysis-section { margin-bottom: 25px; padding: 15px; border-radius: 5px; background-color: #f9f9f9; }
-        .analysis-section h2 { margin-top: 0; color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; font-size: 1.5em; }
-        .status-success { color: green; font-weight: bold; }
-        .status-error { color: red; font-weight: bold; }
-        
-        .error-list { list-style-type: none; padding-left: 0; }
-        .error-list li { background-color: #fff3f3; margin-bottom: 8px; padding: 10px; border-left: 3px solid #dc3545; border-radius: 3px; }
-        
-        .suggestion-step {
-            margin: 15px 0;
-            padding: 15px;
-            background-color: #f0f8ff;
-            border-left: 3px solid #4285f4;
-            border-radius: 4px;
-        }
-        .suggestion-step p { margin: 5px 0; }
-        .suggestion-step strong { color: #333; }
-        .suggestion-step .error-text { color: #c0392b; }
-        
-        .code-highlight {
-            background-color: #eef1f3;
-            padding: 10px;
-            border-radius: 5px;
-            font-family: monospace;
-            white-space: pre-wrap;
-            overflow-x: auto; /* For horizontal scroll if content is too wide */
-            border: 1px solid #d1d5da;
-            margin-top: 10px;
-        }
-
-        .simulation-step {
-            background-color: #e9f7ef;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 15px;
-            border-left: 3px solid #28a745;
-        }
-        .simulation-step h3 { margin-top: 0; font-size: 1.2em; color: #1e7e34; }
-        .simulation-step .code-highlight { background-color: #d4edda; border-color: #c3e6cb; }
-        .variable-state {
-            background-color: #eaf2f8;
-            padding: 8px;
-            border-radius: 3px;
-            font-family: monospace;
-            margin: 5px 0;
-            border: 1px solid #c5d9e8;
-        }
-        .variable-state strong { color: #2c3e50; }
-
+        body { padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        h1, h2, h3, h4 { color: #2c3e50; }
+        .code-line { font-family: 'Courier New', Courier, monospace; background-color: #f8f9fa; padding: 2px 5px; border-radius: 3px; }
+        .error-case { border-left: 4px solid #f44336; padding-left: 15px; margin-bottom: 20px; }
+        .corrected-case { border-left: 4px solid #4CAF50; padding-left: 15px; }
+        .step { margin-bottom: 15px; padding: 10px; background-color: #f9f9f9; border-radius: 5px; }
+        .error-step { background-color: #ffebee; border: 1px solid #ffcdd2; }
+        .error-explanation { background-color: #ffcdd2; padding: 10px; border-radius: 5px; margin-top: 10px; }
+        .back-button { margin-bottom: 20px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>Kết quả Phân tích</h1>
-        </div>
-
-        <p><a href="/">&laquo; Quay lại trang nhập liệu</a></p>
+        <h1 class="mb-4">Kết quả Phân tích</h1>
+        <a href="/" class="btn btn-secondary back-button">« Quay lại trang nhập liệu</a>
 
         {% if error_message %}
-            <div class="error-message">
-                <strong>Lỗi:</strong> {{ text_to_html(error_message) }}
-            </div>
+            <div class="alert alert-danger">{{ error_message }}</div>
         {% elif result %}
             <!-- 1. Phân tích mã nguồn -->
-            <div class="analysis-section">
-                <h2>1. Phân tích mã nguồn</h2>
-                {% set analysis = result.get('analysis', {}) %}
-                {% set meets_requirements = analysis.get('meets_requirements', False) %}
-                <p><strong>Đánh giá đề bài:</strong> 
-                    <span class="{{ 'status-success' if meets_requirements else 'status-error' }}">
-                        {{ "✅ Đạt yêu cầu" if meets_requirements else "❌ Chưa đạt yêu cầu" }}
-                    </span>
-                </p>
-
-                {% set syntax_errors = analysis.get('syntax_errors', []) %}
-                {% set logical_errors = analysis.get('logical_errors', []) %}
-                {% set runtime_errors = analysis.get('runtime_errors', []) %}
-
-                {% if syntax_errors or logical_errors or runtime_errors %}
-                    <h3>Các lỗi phát hiện được:</h3>
-                    {% if syntax_errors %}
-                        <h4>Lỗi cú pháp:</h4>
-                        <ul class="error-list">
-                            {% for error in syntax_errors %}<li>{{ text_to_html(error) }}</li>{% endfor %}
-                        </ul>
-                    {% endif %}
-                    {% if logical_errors %}
-                        <h4>Lỗi logic:</h4>
-                        <ul class="error-list">
-                            {% for error in logical_errors %}<li>{{ text_to_html(error) }}</li>{% endfor %}
-                        </ul>
-                    {% endif %}
-                    {% if runtime_errors %}
-                        <h4>Lỗi thời gian chạy tiềm ẩn:</h4>
-                        <ul class="error-list">
-                            {% for error in runtime_errors %}<li>{{ text_to_html(error) }}</li>{% endfor %}
-                        </ul>
-                    {% endif %}
+            <h2>1. Phân tích mã nguồn</h2>
+            
+            <p><strong>Đánh giá đề bài:</strong> 
+                {% if result.analysis.meets_requirements %}
+                    ✅ Đạt yêu cầu
                 {% else %}
-                    <p>Không phát hiện lỗi nào.</p>
+                    ❌ Chưa đạt yêu cầu
                 {% endif %}
-            </div>
-
+            </p>
+            
+            <p><strong>Các lỗi phát hiện được:</strong></p>
+            
+            {% if result.analysis.syntax_errors and result.analysis.syntax_errors|length > 0 %}
+                <p><strong>Lỗi cú pháp:</strong></p>
+                <ul>
+                    {% for error in result.analysis.syntax_errors %}
+                        <li>{{ text_to_html(error) }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            
+            {% if result.analysis.logical_errors and result.analysis.logical_errors|length > 0 %}
+                <p><strong>Lỗi logic:</strong></p>
+                <ul>
+                    {% for error in result.analysis.logical_errors %}
+                        <li>{{ text_to_html(error) }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            
+            {% if result.analysis.runtime_errors and result.analysis.runtime_errors|length > 0 %}
+                <p><strong>Lỗi thời gian chạy tiềm ẩn:</strong></p>
+                <ul>
+                    {% for error in result.analysis.runtime_errors %}
+                        <li>{{ text_to_html(error) }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            
             <!-- 2. Gợi ý sửa lỗi -->
-            <div class="analysis-section">
-                <h2>2. Gợi ý sửa lỗi</h2>
-                {% set suggestions = result.get('suggestions', []) %}
-                {% if suggestions %}
-                    {% for suggestion in suggestions %}
-                        <div class="suggestion-step">
-                            <p><strong>Dòng {{ suggestion.get('line', 'N/A') }}:</strong> <span class="error-text">{{ text_to_html(suggestion.get('error', '')) }}</span></p>
-                            <p><strong>Đề xuất:</strong> {{ text_to_html(suggestion.get('fix', '')) }}</p>
-                            {% if suggestion.get('fixed_code') %}
-                                <div class="code-highlight">{{ text_to_html(suggestion.get('fixed_code')) }}</div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p>Không có đề xuất sửa lỗi.</p>
-                {% endif %}
-            </div>
-
-            <!-- 3. Mô phỏng thực thi -->
-            <div class="analysis-section">
-                <h2>3. Mô phỏng thực thi từng bước</h2>
-                {% set simulation = result.get('simulation', []) %}
-                {% if simulation %}
-                    {% for step_info in simulation %}
-                        <div class="simulation-step">
-                            <h3>Bước {{ step_info.get('step', 'N/A') }}</h3>
-                            <p><strong>Code:</strong></p>
-                            <div class="code-highlight">{{ text_to_html(step_info.get('code_line', '')) }}</div>
-                            <p><strong>Giải thích:</strong> {{ text_to_html(step_info.get('explanation', '')) }}</p>
-                            {% set variables = step_info.get('variables', {}) %}
-                            {% if variables %}
-                                <h4>Trạng thái biến:</h4>
-                                {% for var_name, var_value in variables.items() %}
-                                    <div class="variable-state"><strong>{{ text_to_html(var_name) }}</strong> = {{ text_to_html(var_value) }}</div>
+            <h2>2. Gợi ý sửa lỗi</h2>
+            
+            {% if result.suggestions and result.suggestions|length > 0 %}
+                {% for suggestion in result.suggestions %}
+                    <p><strong>Dòng {{ suggestion.line }}:</strong> {{ text_to_html(suggestion.error) }}</p>
+                    <p><strong>Đề xuất:</strong> {{ text_to_html(suggestion.fix) }}</p>
+                    {% if suggestion.fixed_code %}
+                        <pre class="bg-light p-2"><code>{{ text_to_html(suggestion.fixed_code) }}</code></pre>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <p>Không có gợi ý sửa lỗi.</p>
+            {% endif %}
+            
+            <!-- 3. Mô phỏng thực thi từng bước -->
+            <h2>3. Mô phỏng thực thi từng bước</h2>
+            
+            {% if result.simulation %}
+                <!-- Trường hợp lỗi -->
+                {% if result.simulation.error_case %}
+                <div class="error-case mb-4">
+                    <h4>Trường hợp lỗi:</h4>
+                    <p><strong>Đầu vào:</strong> {{ text_to_html(result.simulation.error_case.input) }}</p>
+                    
+                    <div class="steps">
+                        {% for step in result.simulation.error_case.steps %}
+                        <div class="step {% if step.is_error_step %}error-step{% endif %}">
+                            <p><strong>Bước {{ step.step }}:</strong></p>
+                            <p><code>{{ text_to_html(step.code_line) }}</code></p>
+                            <p>{{ text_to_html(step.explanation) }}</p>
+                            
+                            {% if step.variables %}
+                            <p><strong>Trạng thái biến:</strong></p>
+                            <ul>
+                                {% for var_name, var_value in step.variables.items() %}
+                                <li>{{ var_name }} = {{ text_to_html(var_value) }}</li>
                                 {% endfor %}
+                            </ul>
+                            {% endif %}
+                            
+                            {% if step.is_error_step %}
+                            <div class="error-explanation">
+                                <p><strong>⚠️ LỖI TẠI BƯỚC NÀY:</strong></p>
+                                <p>{{ text_to_html(step.error_explanation) }}</p>
+                            </div>
                             {% endif %}
                         </div>
-                    {% endfor %}
-                {% else %}
-                    <p>Không có thông tin mô phỏng.</p>
+                        {% endfor %}
+                    </div>
+                    
+                    <p><strong>Kết quả sai:</strong> {{ text_to_html(result.simulation.error_case.result) }}</p>
+                </div>
                 {% endif %}
-            </div>
-
+                
+                <!-- Trường hợp đã sửa -->
+                {% if result.simulation.corrected_case %}
+                <div class="corrected-case">
+                    <h4>Trường hợp đã sửa:</h4>
+                    <p><strong>Đầu vào:</strong> {{ text_to_html(result.simulation.corrected_case.input) }}</p>
+                    
+                    <div class="steps">
+                        {% for step in result.simulation.corrected_case.steps %}
+                        <div class="step">
+                            <p><strong>Bước {{ step.step }}:</strong></p>
+                            <p><code>{{ text_to_html(step.code_line) }}</code></p>
+                            <p>{{ text_to_html(step.explanation) }}</p>
+                            
+                            {% if step.variables %}
+                            <p><strong>Trạng thái biến:</strong></p>
+                            <ul>
+                                {% for var_name, var_value in step.variables.items() %}
+                                <li>{{ var_name }} = {{ text_to_html(var_value) }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <p><strong>Kết quả đúng:</strong> {{ text_to_html(result.simulation.corrected_case.result) }}</p>
+                </div>
+                {% endif %}
+            {% else %}
+                <p>Không có thông tin mô phỏng thực thi.</p>
+            {% endif %}
+            
             <!-- 4. Đánh giá tổng quát -->
-            <div class="analysis-section">
-                <h2>4. Đánh giá tổng quát</h2>
-                <p>{{ text_to_html(result.get('evaluation', 'Không có đánh giá.')) }}</p>
-            </div>
-
-        {% else %}
-             <p>Không có kết quả để hiển thị.</p>
+            <h2>4. Đánh giá tổng quát</h2>
+            <p>{{ text_to_html(result.evaluation) }}</p>
+            
         {% endif %}
-
-        <p style="margin-top: 30px;"><a href="/">&laquo; Quay lại trang nhập liệu</a></p>
+        
+        <a href="/" class="btn btn-secondary mt-3">« Quay lại trang nhập liệu</a>
     </div>
 </body>
 </html> 
