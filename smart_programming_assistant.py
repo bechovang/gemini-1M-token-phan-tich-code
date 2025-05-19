@@ -75,37 +75,48 @@ def create_prompt(problem_description, source_code, language):
   # Đề bài:
   {problem_description}
   
-  # Mã nguồn {language}:
+  # Mã nguồn {language} (DO NGƯỜỜI DÙNG CUNG CẤP):
   ```{language}
   {source_code}
   ```
   
-  Hãy thực hiện các nhiệm vụ sau:
+  Hãy thực hiện các nhiệm vụ sau ĐỐI VỚI MÃ NGUỒN GỐC DO NGƯỜI DÙNG CUNG CẤP:
   
   ## 1. Phân tích mã nguồn
-  - Phân tích cú pháp và ngữ nghĩa của mã nguồn {language}.
-  - Xác định xem mã có thỏa mãn yêu cầu của đề bài không.
-  - Tìm và liệt kê tất cả các lỗi: lỗi cú pháp, lỗi logic, lỗi thời gian chạy tiềm ẩn.
+  - Phân tích cú pháp và ngữ nghĩa của mã nguồn {language} gốc.
+  - Xác định xem mã nguồn gốc có thỏa mãn yêu cầu của đề bài không.
+  - Tìm và liệt kê tất cả các lỗi trong mã nguồn gốc: lỗi cú pháp, lỗi logic, lỗi thời gian chạy tiềm ẩn.
   
-  ## 2. Gợi ý sửa lỗi
-  - Giải thích chi tiết từng lỗi đã tìm thấy (nguyên nhân, dòng code có lỗi).
-  - Đề xuất cách sửa lỗi cụ thể.
-  - Cung cấp đoạn mã đã sửa (nếu cần).
+  ## 2. Gợi ý sửa lỗi (Dành cho mã nguồn gốc)
+  - Giải thích chi tiết từng lỗi đã tìm thấy trong mã nguồn gốc (nguyên nhân, dòng code có lỗi).
+  - Đề xuất cách sửa lỗi cụ thể cho mã nguồn gốc.
+  - Cung cấp đoạn mã đã sửa (nếu cần thiết, dựa trên mã nguồn gốc và các lỗi đã tìm thấy).
   
-  ## 3. Mô phỏng thực thi từng bước
-  - **Bắt buộc**: Thực hiện mô phỏng với **CẢ HAI** trường hợp sau:
-    + **Trường hợp lỗi**: Chọn một đầu vào cụ thể sẽ gây ra lỗi hoặc kết quả sai. Mô phỏng thực thi chi tiết với đầu vào này để chỉ ra lỗi.
-    + **Trường hợp đúng** (Sau khi đã sửa lỗi): Mô phỏng thực thi với một đầu vào khác để chứng minh code đã sửa hoạt động đúng.
+  ## 3. Mô phỏng thực thi từng bước (Sử dụng MÃ NGUỒN GỐC của người dùng)
+  Nhiệm vụ của bạn là tìm hoặc tạo ra các trường hợp kiểm thử (test cases) cho MÃ NGUỒN GỐC được cung cấp và mô phỏng chúng.
   
-  - **Cho mỗi trường hợp**: Thực hiện mô phỏng chi tiết từng bước:
-    + Chỉ rõ giá trị đầu vào đang sử dụng
-    + Hiển thị từng dòng code đang thực thi
-    + Hiển thị giá trị của các biến sau mỗi bước
-    + Với trường hợp lỗi: Đánh dấu **CHÍNH XÁC** bước nào gây ra lỗi
-    + Giải thích tại sao bước đó gây ra lỗi
+  - **Trường hợp tìm lỗi (Error Case Simulation):**
+    + Cố gắng tìm hoặc tạo một ví dụ đầu vào (test case) cụ thể mà sẽ khiến MÃ NGUỒN GỐC gây ra lỗi (logic, runtime) hoặc cho kết quả sai dựa trên phân tích ở Mục 1.
+    + Nếu bạn xác định được một test case gây lỗi:
+      - Mô phỏng thực thi chi tiết MÃ NGUỒN GỐC từng bước với test case gây lỗi này.
+      - Chỉ rõ giá trị đầu vào đang sử dụng.
+      - Hiển thị từng dòng code gốc đang thực thi.
+      - Hiển thị giá trị của các biến quan trọng sau mỗi bước.
+      - Đánh dấu **CHÍNH XÁC** bước nào trong MÃ NGUỒN GỐC gây ra lỗi/kết quả sai.
+      - Giải thích tại sao bước đó gây ra lỗi/kết quả sai.
+    + Nếu bạn KHÔNG THỂ tìm thấy hoặc tạo ra một test case gây lỗi cho MÃ NGUỒN GỐC (ví dụ: mã nguồn gốc có vẻ đúng về mặt logic với các lỗi không thể hiện qua đầu vào đơn giản), hãy ghi rõ trong phần `input` của `error_case` là "Không tìm thấy trường hợp lỗi rõ ràng cho mã nguồn gốc." và có thể bỏ qua các bước mô phỏng chi tiết cho `error_case` hoặc cung cấp một mô phỏng rất ngắn gọn với một đầu vào thông thường nếu muốn.
   
-  ## 4. Đánh giá tổng quát
-  - Tóm tắt về mã nguồn, hiệu suất, và đề xuất cải thiện (nếu có).
+  - **Trường hợp chạy đúng (Happy Path Simulation):**
+    + Tìm hoặc tạo một ví dụ đầu vào (test case) khác mà MÃ NGUỒN GỐC sẽ hoạt động đúng và cho ra kết quả như mong đợi (happy path).
+    + Nếu bạn xác định được một test case chạy đúng:
+      - Mô phỏng thực thi chi tiết MÃ NGUỒN GỐC từng bước với test case này.
+      - Chỉ rõ giá trị đầu vào đang sử dụng.
+      - Hiển thị từng dòng code gốc đang thực thi.
+      - Hiển thị giá trị của các biến quan trọng sau mỗi bước.
+    + Nếu vì lý do nào đó không thể xác định một test case chạy đúng rõ ràng cho MÃ NGUỒN GỐC, hãy ghi rõ trong phần `input` của `happy_path_case` là "Không tìm thấy trường hợp chạy đúng rõ ràng cho mã nguồn gốc." và có thể bỏ qua các bước mô phỏng chi tiết.
+
+  ## 4. Đánh giá tổng quát (Về mã nguồn gốc)
+  - Tóm tắt về mã nguồn gốc, hiệu suất của nó, và đề xuất cải thiện chung (nếu có).
   
   **HƯỚNG DẪN TRẢ LỜI - CỰC KỲ QUAN TRỌNG:**
   
@@ -121,68 +132,60 @@ def create_prompt(problem_description, source_code, language):
     - Ký tự tab phải là `\\\\t`.
   - Các trường chứa mã nguồn (ví dụ: `fixed_code`, `code_line`) phải là một chuỗi JSON hợp lệ. KHÔNG sử dụng dấu backtick (`) để bao quanh giá trị của các trường này; thay vào đó, hãy đảm bảo mã nguồn là một phần của một chuỗi JSON được escape đúng cách.
   
-  **Cấu trúc JSON bắt buộc:**
+  **Cấu trúc JSON bắt buộc (lưu ý tên trường `happy_path_case`):**
   ```json
   {{
-    "analysis": {{
-      "syntax_errors": ["Danh sách các lỗi cú pháp dưới dạng chuỗi"],
-      "logical_errors": ["Danh sách các lỗi logic dưới dạng chuỗi"],
-      "runtime_errors": ["Danh sách các lỗi thời gian chạy tiềm ẩn dưới dạng chuỗi"],
+    "analysis": {{  // Phân tích dựa trên mã nguồn gốc
+      "syntax_errors": ["Danh sách các lỗi cú pháp..."],
+      "logical_errors": ["Danh sách các lỗi logic..."],
+      "runtime_errors": ["Danh sách các lỗi thời gian chạy tiềm ẩn..."],
       "meets_requirements": true/false
     }},
     "suggestions": [
       {{
-        "line": số_dòng, // integer
-        "error": "Mô tả lỗi chi tiết (chuỗi JSON được escape đúng)",
-        "fix": "Đề xuất sửa lỗi chi tiết (chuỗi JSON được escape đúng)",
-        "fixed_code": "Đoạn mã đã sửa (TOÀN BỘ MÃ NGUỒN được đặt trong một chuỗi JSON duy nhất, được escape đúng cách, ví dụ: `#include <stdio.h>\\nint main() {{...}}`)"
+        "line": số_dòng, 
+        "error": "Mô tả lỗi chi tiết...",
+        "fix": "Đề xuất sửa lỗi chi tiết...",
+        "fixed_code": "Chỉ cung cấp CÁC DÒNG MÃ CẦN THAY ĐỔI hoặc một đoạn mã MINH HỌA NGẮN GỌN cho việc sửa lỗi. KHÔNG trả về toàn bộ mã nguồn đã sửa nếu không thực sự cần thiết. (Chuỗi JSON được escape đúng cách)."
       }}
     ],
-    "simulation": {{
+    "simulation": {{ // Mô phỏng dựa trên mã nguồn gốc
       "error_case": {{
-        "input": "Giá trị đầu vào gây lỗi (chuỗi JSON)",
+        "input": "Giá trị đầu vào gây lỗi cho mã gốc HOẶC 'Không tìm thấy trường hợp lỗi rõ ràng cho mã nguồn gốc.'",
         "steps": [
           {{
-            "step": 1, // integer
-            "code_line": "Dòng code đang thực thi (chuỗi JSON được escape đúng)",
-            "explanation": "Giải thích bước (chuỗi JSON được escape đúng)",
-            "variables": {{ // Đối tượng chứa các biến và giá trị của chúng (chuỗi JSON)
-              "tên_biến_1": "giá_trị_1",
-              "tên_biến_2": "giá_trị_2"
-            }},
-            "is_error_step": false // boolean
-          }},
-          {{
-            "step": 2, // integer
-            "code_line": "Dòng code đang thực thi (chuỗi JSON được escape đúng)",
-            "explanation": "Giải thích bước (chuỗi JSON được escape đúng)",
+            "step": 1, 
+            "code_line": "Dòng code GỐC đang thực thi...",
+            "explanation": "Giải thích bước...",
             "variables": {{ 
               "tên_biến_1": "giá_trị_1",
               "tên_biến_2": "giá_trị_2"
             }},
-            "is_error_step": true, // boolean
-            "error_explanation": "Chi tiết lý do tại sao lỗi xảy ra ở bước này (chuỗi JSON được escape đúng)"
+            "is_error_step": false, 
+            "error_explanation": null // Hoặc mô tả lỗi nếu bước này là bước lỗi
           }}
+          // ... thêm các bước nếu có test case lỗi
         ],
-        "result": "Kết quả sai/lỗi thu được (chuỗi JSON)"
+        "result": "Kết quả sai/lỗi thu được từ mã gốc (nếu có test case lỗi)"
       }},
-      "corrected_case": {{
-        "input": "Giá trị đầu vào chạy đúng (chuỗi JSON)",
+      "happy_path_case": {{ // Thay vì corrected_case
+        "input": "Giá trị đầu vào chạy đúng cho mã gốc HOẶC 'Không tìm thấy trường hợp chạy đúng rõ ràng cho mã nguồn gốc.'",
         "steps": [
           {{
-            "step": 1, // integer
-            "code_line": "Dòng code đã sửa đang thực thi (chuỗi JSON được escape đúng)",
-            "explanation": "Giải thích bước (chuỗi JSON được escape đúng)",
+            "step": 1, 
+            "code_line": "Dòng code GỐC đang thực thi...",
+            "explanation": "Giải thích bước...",
             "variables": {{ 
               "tên_biến_1": "giá_trị_1",
               "tên_biến_2": "giá_trị_2"
             }}
           }}
+          // ... thêm các bước nếu có test case chạy đúng
         ],
-        "result": "Kết quả đúng thu được (chuỗi JSON)"
+        "result": "Kết quả đúng thu được từ mã gốc (nếu có test case chạy đúng)"
       }}
     }},
-    "evaluation": "Nhận xét tổng thể về mã nguồn (chuỗi JSON được escape đúng)"
+    "evaluation": "Nhận xét tổng thể về mã nguồn gốc..."
   }}
   ```
   """
