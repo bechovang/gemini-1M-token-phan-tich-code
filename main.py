@@ -20,16 +20,30 @@ app = Flask(__name__)
 model_name_global = None
 gemini_model_global = None  # Global Gemini model
 
-# Thiết lập UI - No longer directly used for console, CSS will be in HTML
-# def setup_css():
-#   print("CSS setup would happen here in a GUI environment.")
+# Key 10 lần dùng
+KEY_FILE = 'key.json'
 
-# Hiển thị tiêu đề ứng dụng - Will be part of HTML template
-# def display_header():
-#   print("\\n" + "="*40)
-#   print("Trợ lý Lập trình Thông minh")
-#   print("Smart Programming Assistant - v1.0")
-#   print("="*40 + "\\n")
+def load_keys():
+    if not os.path.exists(KEY_FILE):
+        with open(KEY_FILE, 'w') as f:
+            json.dump({}, f)
+    with open(KEY_FILE) as f:
+        return json.load(f)
+
+def save_keys(keys):
+    with open(KEY_FILE, 'w') as f:
+        json.dump(keys, f, indent=2)
+
+def validate_and_consume_key(key):
+    keys = load_keys()
+    if key not in keys:
+        return False, "API Key không hợp lệ."
+    if keys[key] >= 10:
+        return False, "API Key đã hết hạn dùng (10 lần)."
+    # tăng bộ đếm
+    keys[key] += 1
+    save_keys(keys)
+    return True, None
 
 # Lấy API key từ .env
 load_dotenv()
@@ -280,6 +294,12 @@ def index():
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
+  api_key = request.form.get('api_key', '').strip()
+  ok, err = validate_and_consume_key(api_key)
+  if not ok:
+      # quay về index với thông báo lỗi
+      return render_template('index.html', error_message=err)
+
   if not model_name_global:
     return render_template('results.html', error_message="Lỗi: Gemini API chưa được cấu hình đúng.", text_to_html=text_to_html)
 

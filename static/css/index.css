@@ -89,6 +89,26 @@
     color: #842029;
     border: 1px solid #f5c2c7;
   }
+  label[for="api_key"] {
+    display: block;
+    margin: 20px 0 10px;
+    font-weight: 600;
+    color: #495057;
+  }
+  input#api_key {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 25px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 1em;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input#api_key:focus {
+    border-color: #4285f4;
+    box-shadow: 0 0 0 0.2rem rgba(66,133,244,0.25);
+    outline: none;
+  }
   
   /* Dark mode cho index */
   body.dark-mode .header {

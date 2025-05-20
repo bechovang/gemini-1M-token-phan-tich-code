@@ -33,7 +33,16 @@
         {% endif %}
 
         <h2>Nhập thông tin phân tích</h2>
+
+        {% if error_message %}
+            <div class="api-status error">{{ error_message }}</div>
+        {% endif %}
+
         <form action="/analyze" method="POST">
+            <div>
+                <label for="api_key">API Key:</label>
+                <input type="text" id="api_key" name="api_key" placeholder="Nhập API Key" required>
+            </div>
             <div>
                 <label for="problem_description">Đề bài (Mô tả yêu cầu):</label>
                 <textarea id="problem_description" name="problem_description" rows="5" required></textarea>
