@@ -1,0 +1,133 @@
+Rất hay! Nếu bạn muốn triển khai Flask app trên PythonAnywhere và tạo **nhiều API key** riêng biệt, mỗi key chỉ được phép dùng tối đa **10 lần**, thì đây là cách thực hiện:
+
+---
+
+## ✅ Mục tiêu:
+
+* Người dùng truy cập web cần nhập một **API key riêng biệt (do bạn cấp)**.
+* Mỗi key chỉ **được dùng tối đa 10 lần**, sau đó **vô hiệu hóa**.
+* Bạn **quản lý danh sách key + số lượt dùng** trên server.
+
+---
+
+## 🔧 Cách triển khai: Dùng dictionary hoặc database để kiểm tra key
+
+### Bước 1: Tạo file chứa danh sách key
+
+Tạo file `key_data.json` hoặc tương đương để lưu:
+
+```json
+{
+  "abc123": 0,
+  "xyz789": 4,
+  "token456": 9
+}
+```
+
+> `abc123` là key, `0` là số lượt đã dùng.
+
+---
+
+### Bước 2: Code Flask kiểm tra key trước khi xử lý request
+
+Trong `smart_programming_assistant.py`, thêm:
+
+```python
+import json
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+KEY_FILE = "key_data.json"
+KEY_LIMIT = 10
+
+def load_keys():
+    with open(KEY_FILE, 'r') as f:
+        return json.load(f)
+
+def save_keys(data):
+    with open(KEY_FILE, 'w') as f:
+        json.dump(data, f)
+
+@app.route('/api', methods=['POST'])
+def handle_request():
+    user_key = request.headers.get("X-API-KEY")  # hoặc request.form.get() nếu dùng form
+
+    if not user_key:
+        return jsonify({"error": "API key is required."}), 401
+
+    keys = load_keys()
+
+    if user_key not in keys:
+        return jsonify({"error": "Invalid API key."}), 403
+
+    if keys[user_key] >= KEY_LIMIT:
+        return jsonify({"error": "API key usage limit exceeded."}), 429
+
+    # ✅ Tăng số lượt dùng
+    keys[user_key] += 1
+    save_keys(keys)
+
+    # ✅ Xử lý yêu cầu
+    response_data = {"message": "Your request was processed!"}
+    return jsonify(response_data)
+```
+
+---
+
+### Bước 3: Gửi request có kèm `X-API-KEY`
+
+Từ trình duyệt hoặc dùng `curl`, hoặc bạn tạo một **form nhập key** ở frontend để người dùng nhập vào.
+
+Ví dụ `curl`:
+
+```bash
+curl -X POST https://yourusername.pythonanywhere.com/api \
+     -H "X-API-KEY: abc123"
+```
+
+---
+
+### ✅ Quản lý key như thế nào?
+
+* Bạn tạo file `key_data.json` lúc đầu:
+
+  ```json
+  {
+    "abc123": 0,
+    "def456": 0,
+    "ghi789": 0
+  }
+  ```
+
+* Khi cần thêm key mới:
+
+  * Vào PythonAnywhere → mở **Bash console** → sửa `key_data.json` hoặc viết Python nhỏ để thêm key:
+
+    ```python
+    import json
+    with open('key_data.json') as f:
+        keys = json.load(f)
+    keys['newkey123'] = 0
+    with open('key_data.json', 'w') as f:
+        json.dump(keys, f)
+    ```
+
+---
+
+## 🔐 Lưu ý bảo mật:
+
+* Đừng để ai đoán được key của bạn — hãy dùng key dài và ngẫu nhiên (`uuid4`, ví dụ).
+* Không truyền key qua URL (`GET`), nên dùng `POST` hoặc header.
+
+---
+
+## ✨ Nâng cấp sau này (nếu muốn):
+
+* Lưu key + lượt dùng vào SQLite thay vì JSON → nhanh hơn, dễ query hơn.
+* Thêm expiry theo thời gian (key hết hạn sau 3 ngày chẳng hạn).
+* Giao diện admin để bạn xem danh sách key + reset thủ công.
+
+---
+
+Bạn muốn mình tạo luôn đoạn code mẫu đầy đủ có route nhập key và check limit không?
