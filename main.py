@@ -22,6 +22,10 @@ model_name_global = None
 gemini_model_global = None  # Global Gemini model
 
 # Key 10 lần dùng
+# Xác định thư mục hiện tại của file main.py
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Đường dẫn tuyệt đối đến key.json
+KEY_FILE = os.path.join(BASE_DIR, 'key.json')
 KEY_FILE = 'key.json'
 
 def load_keys():
