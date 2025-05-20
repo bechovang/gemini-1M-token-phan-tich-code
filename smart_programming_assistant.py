@@ -31,6 +31,17 @@ gemini_model_global = None  # Global Gemini model
 #   print("Smart Programming Assistant - v1.0")
 #   print("="*40 + "\\n")
 
+# Lấy API key từ .env
+load_dotenv()
+
+api_key = os.getenv("GEMINI_API_KEY")
+if not api_key:
+    print("❌ Chưa thiết lập GEMINI_API_KEY trong .env")
+    sys.exit(1)
+
+genai.configure(api_key=api_key)
+
+
 # Cấu hình API key cho Gemini
 def setup_gemini_api():
   load_dotenv()  # Load environment variables from .env file
