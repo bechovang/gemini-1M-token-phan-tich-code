@@ -1,0 +1,167 @@
+Đây là một **kế hoạch chi tiết** (planning) để bạn dùng **Google Colab + API Key Gemini** nhằm **phân tích mã nguồn từ một GitHub repo** và **tự động tạo file `.md` mô tả đầy đủ codebase**.
+
+---
+
+## 🧠 **Mục tiêu**
+
+Tự động:
+
+1. Clone repo từ GitHub.
+2. Đọc các tệp mã nguồn (Python, C, HTML...).
+3. Dùng API Gemini để phân tích từng tệp, giải thích ý nghĩa, chức năng, luồng logic.
+4. Tổng hợp lại thành file `README_ANALYSIS.md`.
+
+---
+
+## 🧩 **Yêu cầu**
+
+### 📌 Công cụ:
+
+* [x] Google Colab
+* [x] API Key Gemini (Model Gemini Pro hoặc Gemini 1.5 Pro)
+* [x] Python packages: `google.generativeai`, `openai`, `os`, `glob`, `markdown`, `requests`, `gitpython`
+
+### 📌 Input:
+
+* URL repo GitHub (VD: `https://github.com/bechovang/gemini-1M-token-phan-tich-code`)
+
+### 📌 Output:
+
+* File `.md` chứa giải thích toàn bộ codebase (theo file, chức năng, luồng chương trình, dependency...)
+
+---
+
+## 🔧 **Chi tiết các bước thực hiện**
+
+### 🔹 Bước 1: Setup môi trường Google Colab
+
+```python
+!pip install gitpython google-generativeai
+```
+
+---
+
+### 🔹 Bước 2: Clone repo GitHub
+
+```python
+from git import Repo
+repo_url = "https://github.com/bechovang/gemini-1M-token-phan-tich-code"
+local_path = "/content/codebase"
+Repo.clone_from(repo_url, local_path)
+```
+
+---
+
+### 🔹 Bước 3: Load API Gemini và chuẩn bị model
+
+```python
+import google.generativeai as genai
+
+genai.configure(api_key="YOUR_API_KEY")
+
+model = genai.GenerativeModel('gemini-1.5-pro')  # hoặc gemini-pro nếu token thấp hơn
+```
+
+---
+
+### 🔹 Bước 4: Đọc từng tệp mã nguồn
+
+```python
+import os
+
+code_files = []
+for root, dirs, files in os.walk(local_path):
+    for file in files:
+        if file.endswith((".py", ".c", ".cpp", ".html", ".js", ".ipynb")):
+            code_files.append(os.path.join(root, file))
+```
+
+---
+
+### 🔹 Bước 5: Gửi từng file cho Gemini để phân tích
+
+````python
+def analyze_code(file_path):
+    with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+        code = f.read()
+
+    prompt = f"""
+    Dưới đây là nội dung của file: {file_path}. 
+    Hãy giải thích chi tiết chức năng của từng phần trong file, mục đích, luồng thực thi, các thư viện dùng, các biến và hàm quan trọng. 
+    Viết dạng Markdown, dễ đọc, rõ ràng.
+
+    ```{file_path.split('.')[-1]}
+    {code}
+    ```
+    """
+    response = model.generate_content(prompt)
+    return f"## 📄 {os.path.basename(file_path)}\n" + response.text
+````
+
+---
+
+### 🔹 Bước 6: Ghi kết quả vào `README_ANALYSIS.md`
+
+```python
+with open("README_ANALYSIS.md", "w", encoding="utf-8") as f:
+    for file in code_files:
+        try:
+            analysis = analyze_code(file)
+            f.write(analysis + "\n\n---\n\n")
+        except Exception as e:
+            f.write(f"## ❌ {file} - lỗi khi phân tích: {str(e)}\n\n")
+```
+
+---
+
+### 🔹 Bước 7: Tải file `.md` về máy
+
+```python
+from google.colab import files
+files.download("README_ANALYSIS.md")
+```
+
+---
+
+## 🗂️ Gợi ý cấu trúc Markdown
+
+Bạn có thể cấu trúc nội dung file như sau:
+
+```markdown
+# 📊 Phân Tích Codebase: <Tên Repo>
+
+## Tổng quan
+- Repo này nhằm mục đích...
+- Ngôn ngữ chính: Python, C
+- Các file chính: main.py, logic.py, templates/index.html
+
+---
+
+## 📄 main.py
+- Chức năng chính: điều phối chương trình.
+- Gồm các phần:
+  - `import`: thư viện sử dụng
+  - `main()`: entry point
+  - `handle_input()`: xử lý dữ liệu đầu vào
+...
+
+---
+
+## 📄 templates/index.html
+- Giao diện chính của ứng dụng.
+- Chứa layout cho người dùng.
+...
+
+```
+
+---
+
+## 🚀 Tips nâng cao
+
+* Có thể gom các file cùng loại (Python, HTML) vào 1 mục.
+* Dùng Gemini để gợi ý **luồng thực thi tổng thể toàn repo** (sau khi đọc từng file).
+* Có thể bổ sung phần sơ đồ flowchart (nếu kết hợp với Graphviz).
+
+---
+
+Bạn muốn mình viết luôn bản mẫu Colab cho repo cụ thể này (`https://github.com/bechovang/gemini-1M-token-phan-tich-code`) không?

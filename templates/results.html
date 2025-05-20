@@ -1,223 +1,19 @@
+<!-- templates/result.html -->
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kết quả Phân tích</title>
+
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Confetti library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 20px;
-            background-color: #f8f9fa; /* Light mode background */
-            color: #212529; /* Light mode text */
-            transition: background-color 0.3s, color 0.3s;
-            line-height: 1.6;
-        }
-        .container {
-            max-width: 900px; /* Slightly wider for results */
-            margin: 30px auto;
-            padding: 30px;
-            background-color: #ffffff; /* Light mode container background */
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            transition: background-color 0.3s;
-        }
-        h1, h2, h3, h4 {
-            color: #2c3e50;
-        }
-        .page-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #dee2e6;
-            padding-bottom: 20px;
-        }
-        .page-header h1 {
-            color: #4285f4;
-            font-weight: 600;
-        }
-        .section-title {
-            margin-top: 30px;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #4285f4;
-            display: inline-block;
-        }
 
-        .code-line {
-            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
-            background-color: #e9ecef;
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-size: 0.9em;
-            word-break: break-all; /* Ensure long code lines wrap */
-        }
-        pre.bg-light {
-            background-color: #e9ecef !important; /* Override Bootstrap if needed */
-            padding: 15px;
-            border-radius: 6px;
-            border: 1px solid #ced4da;
-        }
-        pre code {
-            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
-            font-size: 0.9em;
-        }
-
-        .error-case {
-            border-left: 5px solid #dc3545; /* Bootstrap danger color */
-            padding-left: 20px;
-            margin-bottom: 25px;
-            background-color: #fbeeed;
-            padding-top: 15px;
-            padding-bottom: 15px;
-            border-radius: 0 6px 6px 0;
-        }
-        .happy-path-case, .corrected-case { /* Combined for happy path */
-            border-left: 5px solid #198754; /* Bootstrap success color */
-            padding-left: 20px;
-            margin-bottom: 25px;
-            background-color: #e8f5e9;
-            padding-top: 15px;
-            padding-bottom: 15px;
-            border-radius: 0 6px 6px 0;
-        }
-        .step {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 6px;
-            border: 1px solid #eee;
-        }
-        .error-step {
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-        }
-        .error-explanation {
-            background-color: #fddfe2;
-            padding: 12px;
-            border-radius: 5px;
-            margin-top: 12px;
-            border: 1px dashed #dc3545;
-        }
-        .error-explanation p strong {
-            color: #b02a37;
-        }
-
-        .btn-custom-secondary {
-            background-color: #6c757d;
-            border-color: #6c757d;
-            color: white;
-            padding: 10px 20px;
-            font-size: 1em;
-            transition: background-color 0.2s, border-color 0.2s;
-        }
-        .btn-custom-secondary:hover {
-            background-color: #5a6268;
-            border-color: #545b62;
-            color: white;
-        }
-
-        .back-button-container {
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Dark Mode Styles */
-        body.dark-mode {
-            background-color: #121212;
-            color: #e0e0e0;
-        }
-        body.dark-mode .container {
-            background-color: #1e1e1e;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-        }
-        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4 {
-            color: #c2c2c2;
-        }
-        body.dark-mode .page-header h1 {
-            color: #1a73e8; /* Darker blue for dark mode header */
-        }
-        body.dark-mode .page-header {
-            border-bottom-color: #333;
-        }
-        body.dark-mode .section-title {
-            border-bottom-color: #1a73e8;
-        }
-        body.dark-mode .code-line {
-            background-color: #2c2c2c;
-            color: #e0e0e0;
-        }
-        body.dark-mode pre.bg-light {
-            background-color: #2c2c2c !important;
-            border-color: #444;
-        }
-        body.dark-mode .error-case {
-            border-left-color: #f07178; /* Softer red for dark mode */
-            background-color: #2c1d1f;
-        }
-        body.dark-mode .happy-path-case,
-        body.dark-mode .corrected-case {
-            border-left-color: #68c97d; /* Softer green for dark mode */
-            background-color: #1e2b20;
-        }
-        body.dark-mode .step {
-            background-color: #252525;
-            border-color: #383838;
-        }
-        body.dark-mode .error-step {
-            background-color: #4d2226;
-            border-color: #713238;
-        }
-        body.dark-mode .error-explanation {
-            background-color: #522b2e;
-            border-color: #f07178;
-        }
-        body.dark-mode .error-explanation p strong {
-            color: #f5c2c7;
-        }
-        body.dark-mode .btn-custom-secondary {
-            background-color: #495057;
-            border-color: #495057;
-            color: #e0e0e0;
-        }
-        body.dark-mode .btn-custom-secondary:hover {
-            background-color: #3a4045;
-            border-color: #343a40;
-            color: #e0e0e0;
-        }
-        body.dark-mode .alert-danger {
-            background-color: #4d2226;
-            color: #f5c2c7;
-            border-color: #713238;
-        }
-
-        .theme-toggle-button {
-            /* position: fixed; Ensure it's not overlapping with content if fixed */
-            /* top: 20px; */
-            /* right: 20px; */
-            padding: 10px 15px;
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9em;
-            /* z-index: 1000; */
-            transition: background-color 0.3s;
-        }
-        body.dark-mode .theme-toggle-button {
-            background-color: #495057;
-        }
-        .theme-toggle-button:hover {
-            background-color: #5a6268;
-        }
-        body.dark-mode .theme-toggle-button:hover {
-            background-color: #343a40;
-        }
-    </style>
+    <!-- CSS chung và riêng cho result -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/result.css') }}">
 </head>
 <body>
     <div class="container"
@@ -245,186 +41,102 @@
         {% elif result %}
             <!-- 1. Phân tích mã nguồn -->
             <h2 class="section-title">1. Phân tích mã nguồn</h2>
-            
-            <p><strong>Đánh giá đề bài:</strong> 
-                {% if result.analysis.meets_requirements %}
-                    ✅ Đạt yêu cầu
-                {% else %}
-                    ❌ Chưa đạt yêu cầu
-                {% endif %}
+            <p><strong>Đánh giá đề bài:</strong>
+                {% if result.analysis.meets_requirements %}✅ Đạt yêu cầu{% else %}❌ Chưa đạt yêu cầu{% endif %}
             </p>
-            
             <p><strong>Các lỗi phát hiện được:</strong></p>
-            
-            {% if result.analysis.syntax_errors and result.analysis.syntax_errors|length > 0 %}
+            {% if result.analysis.syntax_errors %}
                 <p><strong>Lỗi cú pháp:</strong></p>
-                <ul>
-                    {% for error in result.analysis.syntax_errors %}
-                        <li>{{ text_to_html(error) }}</li>
-                    {% endfor %}
-                </ul>
+                <ul>{% for e in result.analysis.syntax_errors %}<li>{{ text_to_html(e) }}</li>{% endfor %}</ul>
             {% endif %}
-            
-            {% if result.analysis.logical_errors and result.analysis.logical_errors|length > 0 %}
+            {% if result.analysis.logical_errors %}
                 <p><strong>Lỗi logic:</strong></p>
-                <ul>
-                    {% for error in result.analysis.logical_errors %}
-                        <li>{{ text_to_html(error) }}</li>
-                    {% endfor %}
-                </ul>
+                <ul>{% for e in result.analysis.logical_errors %}<li>{{ text_to_html(e) }}</li>{% endfor %}</ul>
             {% endif %}
-            
-            {% if result.analysis.runtime_errors and result.analysis.runtime_errors|length > 0 %}
+            {% if result.analysis.runtime_errors %}
                 <p><strong>Lỗi thời gian chạy tiềm ẩn:</strong></p>
-                <ul>
-                    {% for error in result.analysis.runtime_errors %}
-                        <li>{{ text_to_html(error) }}</li>
-                    {% endfor %}
-                </ul>
+                <ul>{% for e in result.analysis.runtime_errors %}<li>{{ text_to_html(e) }}</li>{% endfor %}</ul>
             {% endif %}
-            
+
             <!-- 2. Gợi ý sửa lỗi -->
             <h2 class="section-title">2. Gợi ý sửa lỗi</h2>
-            
-            {% if result.suggestions and result.suggestions|length > 0 %}
-                {% for suggestion in result.suggestions %}
-                    <p><strong>Dòng {{ suggestion.line }}:</strong> {{ text_to_html(suggestion.error) }}</p>
-                    <p><strong>Đề xuất:</strong> {{ text_to_html(suggestion.fix) }}</p>
-                    {% if suggestion.fixed_code %}
-                        <pre class="bg-light p-2"><code>{{ text_to_html(suggestion.fixed_code) }}</code></pre>
+            {% if result.suggestions %}
+                {% for s in result.suggestions %}
+                    <p><strong>Dòng {{ s.line }}:</strong> {{ text_to_html(s.error) }}</p>
+                    <p><strong>Đề xuất:</strong> {{ text_to_html(s.fix) }}</p>
+                    {% if s.fixed_code %}
+                        <pre class="bg-light p-2"><code>{{ text_to_html(s.fixed_code) }}</code></pre>
                     {% endif %}
                 {% endfor %}
             {% else %}
                 <p>Không có gợi ý sửa lỗi.</p>
             {% endif %}
-            
+
             <!-- 3. Mô phỏng thực thi từng bước -->
             <h2 class="section-title">3. Mô phỏng thực thi từng bước</h2>
-            
             {% if result.simulation %}
-                <!-- Trường hợp lỗi -->
                 {% if result.simulation.error_case %}
-                <div class="error-case mb-4">
-                    <h4>Trường hợp lỗi:</h4>
-                    <p><strong>Đầu vào:</strong> {{ text_to_html(result.simulation.error_case.input) }}</p>
-                    
-                    <div class="steps">
-                        {% for step in result.simulation.error_case.steps %}
-                        <div class="step {% if step.is_error_step %}error-step{% endif %}">
-                            <p><strong>Bước {{ step.step }}:</strong></p>
-                            <p><code>{{ text_to_html(step.code_line) }}</code></p>
-                            <p>{{ text_to_html(step.explanation) }}</p>
-                            
-                            {% if step.variables %}
-                            <p><strong>Trạng thái biến:</strong></p>
-                            <ul>
-                                {% for var_name, var_value in step.variables.items() %}
-                                <li>{{ var_name }} = {{ text_to_html(var_value) }}</li>
-                                {% endfor %}
-                            </ul>
-                            {% endif %}
-                            
-                            {% if step.is_error_step %}
-                            <div class="error-explanation">
-                                <p><strong>⚠️ LỖI TẠI BƯỚC NÀY:</strong></p>
-                                <p>{{ text_to_html(step.error_explanation) }}</p>
-                            </div>
-                            {% endif %}
+                    <div class="error-case mb-4">
+                        <h4>Trường hợp lỗi:</h4>
+                        <p><strong>Đầu vào:</strong> {{ text_to_html(result.simulation.error_case.input) }}</p>
+                        <div class="steps">
+                            {% for step in result.simulation.error_case.steps %}
+                                <div class="step {% if step.is_error_step %}error-step{% endif %}">
+                                    <p><strong>Bước {{ step.step }}:</strong></p>
+                                    <p><code>{{ text_to_html(step.code_line) }}</code></p>
+                                    <p>{{ text_to_html(step.explanation) }}</p>
+                                    {% if step.variables %}
+                                        <p><strong>Trạng thái biến:</strong></p>
+                                        <ul>{% for n,v in step.variables.items() %}<li>{{ n }} = {{ text_to_html(v) }}</li>{% endfor %}</ul>
+                                    {% endif %}
+                                    {% if step.is_error_step %}
+                                        <div class="error-explanation">
+                                            <p><strong>⚠️ LỖI TẠI BƯỚC NÀY:</strong></p>
+                                            <p>{{ text_to_html(step.error_explanation) }}</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
+                        <p><strong>Kết quả sai:</strong> {{ text_to_html(result.simulation.error_case.result) }}</p>
                     </div>
-                    
-                    <p><strong>Kết quả sai:</strong> {{ text_to_html(result.simulation.error_case.result) }}</p>
-                </div>
                 {% endif %}
-                
-                <!-- Trường hợp đã sửa -->
                 {% if result.simulation.corrected_case %}
-                <div class="corrected-case">
-                    <h4>Trường hợp đã sửa:</h4>
-                    <p><strong>Đầu vào:</strong> {{ text_to_html(result.simulation.corrected_case.input) }}</p>
-                    
-                    <div class="steps">
-                        {% for step in result.simulation.corrected_case.steps %}
-                        <div class="step">
-                            <p><strong>Bước {{ step.step }}:</strong></p>
-                            <p><code>{{ text_to_html(step.code_line) }}</code></p>
-                            <p>{{ text_to_html(step.explanation) }}</p>
-                            
-                            {% if step.variables %}
-                            <p><strong>Trạng thái biến:</strong></p>
-                            <ul>
-                                {% for var_name, var_value in step.variables.items() %}
-                                <li>{{ var_name }} = {{ text_to_html(var_value) }}</li>
-                                {% endfor %}
-                            </ul>
-                            {% endif %}
+                    <div class="corrected-case">
+                        <h4>Trường hợp đã sửa:</h4>
+                        <p><strong>Đầu vào:</strong> {{ text_to_html(result.simulation.corrected_case.input) }}</p>
+                        <div class="steps">
+                            {% for step in result.simulation.corrected_case.steps %}
+                                <div class="step">
+                                    <p><strong>Bước {{ step.step }}:</strong></p>
+                                    <p><code>{{ text_to_html(step.code_line) }}</code></p>
+                                    <p>{{ text_to_html(step.explanation) }}</p>
+                                    {% if step.variables %}
+                                        <p><strong>Trạng thái biến:</strong></p>
+                                        <ul>{% for n,v in step.variables.items() %}<li>{{ n }} = {{ text_to_html(v) }}</li>{% endfor %}</ul>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
+                        <p><strong>Kết quả đúng:</strong> {{ text_to_html(result.simulation.corrected_case.result) }}</p>
                     </div>
-                    
-                    <p><strong>Kết quả đúng:</strong> {{ text_to_html(result.simulation.corrected_case.result) }}</p>
-                </div>
                 {% endif %}
             {% else %}
                 <p>Không có thông tin mô phỏng thực thi.</p>
             {% endif %}
-            
+
             <!-- 4. Đánh giá tổng quát -->
             <h2 class="section-title">4. Đánh giá tổng quát</h2>
             <p>{{ text_to_html(result.evaluation) }}</p>
-            
         {% endif %}
-        
+
         <div class="mt-4 text-center">
-             <a href="/" class="btn btn-custom-secondary">« Quay lại trang nhập liệu</a>
+            <a href="/" class="btn btn-custom-secondary">« Quay lại trang nhập liệu</a>
         </div>
     </div>
 
-    <script>
-        function toggleDarkMode() {
-            const body = document.body;
-            body.classList.toggle('dark-mode');
-            // Save preference to localStorage
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
-            }
-        }
-
-        // Apply saved theme on load
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-            }
-            // If you want to explicitly set light mode if nothing is saved or if 'light' is saved:
-            // else {
-            //     document.body.classList.remove('dark-mode');
-            // }
-
-            // Confetti logic
-            const resultsContainer = document.querySelector('.container');
-            if (resultsContainer && resultsContainer.dataset.analysisPresent === 'true') {
-                const meetsRequirements = JSON.parse(resultsContainer.dataset.meetsRequirements || 'false');
-                const syntaxErrorsCount = JSON.parse(resultsContainer.dataset.syntaxErrorsCount || '0');
-                const logicalErrorsCount = JSON.parse(resultsContainer.dataset.logicalErrorsCount || '0');
-                const runtimeErrorsCount = JSON.parse(resultsContainer.dataset.runtimeErrorsCount || '0');
-
-                if (meetsRequirements && syntaxErrorsCount === 0 && logicalErrorsCount === 0 && runtimeErrorsCount === 0) {
-                    if (typeof confetti === 'function') {
-                        const confettiOptions = {
-                            particleCount: 150,
-                            spread: 90,
-                            origin: { y: 0.6 },
-                            disableForReducedMotion: true
-                        };
-                        confetti(confettiOptions);
-                    }
-                }
-            }
-        });
-    </script>
+    <!-- JS chung và riêng cho result -->
+    <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/result.js') }}"></script>
 </body>
-</html> 
+</html>

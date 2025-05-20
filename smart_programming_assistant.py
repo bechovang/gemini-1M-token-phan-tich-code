@@ -33,7 +33,7 @@ gemini_model_global = None  # Global Gemini model
 def setup_gemini_api():
   global model_name_global, gemini_model_global
   try:
-    api_key = "AIzaSyAa7zBQuCGvrsoQ3WF75JL76_0ZiD4_w6g"
+    api_key = "AIzaSyBYEKKI0v-5WvixUA4BY9EPLeOul92FYcQ"
     
     # Configure the Gemini API
     genai.configure(api_key=api_key)
