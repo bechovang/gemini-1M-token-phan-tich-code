@@ -6,6 +6,7 @@
 # Make sure to install python-dotenv: pip install python-dotenv
 
 import os
+import sys
 import re
 import textwrap
 import google.generativeai as genai  # Use Google's Gemini API
