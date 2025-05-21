@@ -68,6 +68,7 @@ venv\Scripts\activate
 :: Cài thư viện
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 pip install matplotlib tqdm Flask google-generativeai
+pip install python-dotenv
 
 :: Chạy chương trình
 python smart_programming_assistant.py
